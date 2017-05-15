@@ -32,14 +32,10 @@
 			<plugins>
 				<!-- <vm-plugins:fasttext-support /> -->
 				<vm-plugins:renderable-support />
-				<!-- <vm-plugins:escape-support defaultEscape="html">
-					<vm-plugins:noescape>
-						<vm-plugins:if-matches pattern="^control\." />
-						<vm-plugins:if-matches pattern="^screen_placeholder" />
-						<vm-plugins:if-matches pattern="^stringEscapeUtil\.escape" />
-						<vm-plugins:if-matches pattern="^csrfToken\.(get)?hiddenField" />
-					</vm-plugins:noescape>
-				</vm-plugins:escape-support> -->
+				<!-- <vm-plugins:escape-support defaultEscape="html"> <vm-plugins:noescape> 
+					<vm-plugins:if-matches pattern="^control\." /> <vm-plugins:if-matches pattern="^screen_placeholder" 
+					/> <vm-plugins:if-matches pattern="^stringEscapeUtil\.escape" /> <vm-plugins:if-matches 
+					pattern="^csrfToken\.(get)?hiddenField" /> </vm-plugins:noescape> </vm-plugins:escape-support> -->
 			</plugins>
 		</velocity-engine>
 		<!-- <freemarker-engine templateEncoding="GBK" path="/${component}/templates" 

@@ -2,8 +2,6 @@ package com.alibaba.dubbo.remoting.zookeeper;
 
 import java.util.List;
 
-import com.alibaba.dubbo.common.URL;
-
 public interface ZookeeperClient {
 
 	void create(String path, boolean ephemeral);
@@ -17,13 +15,13 @@ public interface ZookeeperClient {
 	void removeChildListener(String path, ChildListener listener);
 
 	void addStateListener(StateListener listener);
-	
+
 	void removeStateListener(StateListener listener);
 
 	boolean isConnected();
 
 	void close();
 
-	URL getUrl();
+	// URL getUrl();
 
 }

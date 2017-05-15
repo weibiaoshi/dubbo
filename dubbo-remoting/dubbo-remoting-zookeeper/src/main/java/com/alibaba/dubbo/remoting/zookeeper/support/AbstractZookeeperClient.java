@@ -17,7 +17,7 @@ public abstract class AbstractZookeeperClient<TargetChildListener> implements Zo
 
 	protected static final Logger logger = LoggerFactory.getLogger(AbstractZookeeperClient.class);
 
-	private final URL url;
+	// private final URL url;
 
 	private final Set<StateListener> stateListeners = new CopyOnWriteArraySet<StateListener>();
 
@@ -25,13 +25,16 @@ public abstract class AbstractZookeeperClient<TargetChildListener> implements Zo
 
 	private volatile boolean closed = false;
 
-	public AbstractZookeeperClient(URL url) {
-		this.url = url;
-	}
+	public AbstractZookeeperClient() {
 
-	public URL getUrl() {
-		return url;
 	}
+	// public AbstractZookeeperClient(URL url) {
+	// this.url = url;
+	// }
+
+	// public URL getUrl() {
+	// return url;
+	// }
 
 	public void create(String path, boolean ephemeral) {
 		int i = path.lastIndexOf('/');

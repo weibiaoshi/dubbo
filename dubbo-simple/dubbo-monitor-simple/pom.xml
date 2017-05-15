@@ -75,8 +75,8 @@
    	 		<artifactId>zkclient</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.netflix.curator</groupId>
-			<artifactId>curator-framework</artifactId>
+			<groupId>org.apache.curator</groupId>
+    			<artifactId>curator-framework</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.googlecode.xmemcached</groupId>
