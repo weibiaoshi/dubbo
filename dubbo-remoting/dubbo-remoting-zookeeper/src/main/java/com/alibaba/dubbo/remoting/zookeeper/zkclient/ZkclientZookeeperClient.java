@@ -32,8 +32,13 @@ public class ZkclientZookeeperClient extends AbstractZookeeperClient<IZkChildLis
 					stateChanged(StateListener.CONNECTED);
 				}
 			}
+
 			public void handleNewSession() throws Exception {
 				stateChanged(StateListener.RECONNECTED);
+			}
+
+			public void handleSessionEstablishmentError(Throwable error) throws Exception {
+
 			}
 		});
 	}
@@ -62,9 +67,9 @@ public class ZkclientZookeeperClient extends AbstractZookeeperClient<IZkChildLis
 	public List<String> getChildren(String path) {
 		try {
 			return client.getChildren(path);
-        } catch (ZkNoNodeException e) {
-            return null;
-        }
+		} catch (ZkNoNodeException e) {
+			return null;
+		}
 	}
 
 	public boolean isConnected() {
@@ -77,8 +82,7 @@ public class ZkclientZookeeperClient extends AbstractZookeeperClient<IZkChildLis
 
 	public IZkChildListener createTargetChildListener(String path, final ChildListener listener) {
 		return new IZkChildListener() {
-			public void handleChildChange(String parentPath, List<String> currentChilds)
-					throws Exception {
+			public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
 				listener.childChanged(parentPath, currentChilds);
 			}
 		};
@@ -89,7 +93,7 @@ public class ZkclientZookeeperClient extends AbstractZookeeperClient<IZkChildLis
 	}
 
 	public void removeTargetChildListener(String path, IZkChildListener listener) {
-		client.unsubscribeChildChanges(path,  listener);
+		client.unsubscribeChildChanges(path, listener);
 	}
 
 }
