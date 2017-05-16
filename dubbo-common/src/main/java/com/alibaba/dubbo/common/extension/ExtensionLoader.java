@@ -477,7 +477,6 @@ public class ExtensionLoader<T> {
 				throw new IllegalStateException("fail to create adaptive instance: " + createAdaptiveInstanceError.toString(), createAdaptiveInstanceError);
 			}
 		}
-
 		return (T) instance;
 	}
 
@@ -741,6 +740,7 @@ public class ExtensionLoader<T> {
 	}
 
 	private String createAdaptiveExtensionClassCode() {
+
 		StringBuilder codeBuidler = new StringBuilder();
 		Method[] methods = type.getMethods();
 		boolean hasAdaptiveAnnotation = false;
@@ -751,9 +751,9 @@ public class ExtensionLoader<T> {
 			}
 		}
 		// 完全没有Adaptive方法，则不需要生成Adaptive类
-		if (!hasAdaptiveAnnotation)
+		if (!hasAdaptiveAnnotation) {
 			throw new IllegalStateException("No adaptive method on extension " + type.getName() + ", refuse to create the adaptive class!");
-
+		}
 		codeBuidler.append("package " + type.getPackage().getName() + ";");
 		codeBuidler.append("\nimport " + ExtensionLoader.class.getName() + ";");
 		codeBuidler.append("\npublic class " + type.getSimpleName() + "$Adpative" + " implements " + type.getCanonicalName() + " {");
