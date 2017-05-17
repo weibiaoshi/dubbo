@@ -22,24 +22,24 @@ import com.alibaba.dubbo.registry.common.domain.Provider;
  */
 public class Unregisterall extends Shell {
 
-    @Autowired
-    private ProviderService  providerService;
-    
-    @Autowired
-    private HttpServletRequest request;
+	@Autowired
+	private ProviderService providerService;
 
-    protected String doExecute(Map<String,Object> context) throws Exception {
-    	String address = request.getParameter("provider");
-    	if (address == null || address.length() == 0) {
-    	    address = request.getParameter("client");
-    	}
+	@Autowired
+	private HttpServletRequest request;
+
+	protected String doExecute(Map<String, Object> context) throws Exception {
+		String address = request.getParameter("provider");
+		if (address == null || address.length() == 0) {
+			address = request.getParameter("client");
+		}
 		if (address == null || address.length() == 0) {
 			throw new IllegalArgumentException("The url provider parameter is null! Usage: " + request.getRequestURL().toString() + "?provider=" + operatorAddress);
 		}
 		List<Provider> providers = providerService.findByAddress(address);
 		if (providers != null && providers.size() > 0) {
 			for (Provider provider : providers) {
-				if (! currentUser.hasServicePrivilege(provider.getService())) {
+				if (!currentUser.hasServicePrivilege(provider.getService())) {
 					throw new IllegalStateException("The user " + currentUser + " have no privilege of service " + provider.getService());
 				}
 			}
@@ -50,6 +50,6 @@ public class Unregisterall extends Shell {
 			}
 		}
 		return "Unregister " + (providers == null ? 0 : providers.size()) + " services.";
-    }
+	}
 
 }

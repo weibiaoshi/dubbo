@@ -8,6 +8,7 @@ import com.alibaba.dubbo.common.io.Bytes;
 public class Coder {
 
 	public static String encodeHex(byte[] bytes) {
+
 		StringBuffer buffer = new StringBuffer(bytes.length * 2);
 		for (int i = 0; i < bytes.length; i++) {
 			if (((int) bytes[i] & 0xff) < 0x10)
@@ -16,11 +17,11 @@ public class Coder {
 		}
 		return buffer.toString();
 	}
-	
+
 	public static String encodeMd5(String source) {
 		return encodeMd5(source.getBytes());
 	}
-	
+
 	public static String encodeMd5(byte[] source) {
 		try {
 			return encodeHex(MessageDigest.getInstance("MD5").digest(source));
@@ -28,15 +29,16 @@ public class Coder {
 			throw new IllegalStateException(e.getMessage(), e);
 		}
 	}
-	
+
 	public static String encodeBase64(String source) {
 		return Bytes.bytes2base64(source.getBytes());
 	}
 
 	public static String decodeBase64(String source) {
-	    return new String(Bytes.base642bytes(source));
+		return new String(Bytes.base642bytes(source));
 	}
-	
-	private Coder() {}
-	
+
+	private Coder() {
+	}
+
 }
