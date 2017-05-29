@@ -1,8 +1,14 @@
 package com.alibaba.dubbo.remoting.zookeeper.curator;
 
-import java.io.IOException;
 import java.util.List;
 
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.CuratorFrameworkFactory.Builder;
+import org.apache.curator.framework.api.CuratorWatcher;
+import org.apache.curator.framework.state.ConnectionState;
+import org.apache.curator.framework.state.ConnectionStateListener;
+import org.apache.curator.retry.RetryNTimes;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException.NoNodeException;
 import org.apache.zookeeper.KeeperException.NodeExistsException;
@@ -12,20 +18,12 @@ import com.alibaba.dubbo.common.URL;
 import com.alibaba.dubbo.remoting.zookeeper.ChildListener;
 import com.alibaba.dubbo.remoting.zookeeper.StateListener;
 import com.alibaba.dubbo.remoting.zookeeper.support.AbstractZookeeperClient;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.framework.CuratorFrameworkFactory.Builder;
-import org.apache.curator.framework.api.CuratorWatcher;
-import org.apache.curator.framework.state.ConnectionState;
-import org.apache.curator.framework.state.ConnectionStateListener;
-import org.apache.curator.retry.RetryNTimes;
 
 public class CuratorZookeeperClient extends AbstractZookeeperClient<CuratorWatcher> {
 
 	private final CuratorFramework client;
 
 	public CuratorZookeeperClient(URL url) {
-		// super(url);
 		Builder builder = CuratorFrameworkFactory.builder().connectString(url.getBackupAddress()).retryPolicy(new RetryNTimes(Integer.MAX_VALUE, 1000)).connectionTimeoutMs(5000);
 		String authority = url.getAuthority();
 		if (authority != null && authority.length() > 0) {

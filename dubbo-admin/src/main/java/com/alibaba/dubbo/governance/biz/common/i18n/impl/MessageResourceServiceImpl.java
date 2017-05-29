@@ -7,6 +7,12 @@ import org.springframework.context.NoSuchMessageException;
 import com.alibaba.dubbo.governance.biz.common.i18n.MessageResourceService;
 import com.alibaba.dubbo.governance.web.common.i18n.LocaleUtil;
 
+/**
+ * 
+ * @author shi
+ * @date 2017年5月20日 下午12:57:18
+ * @since 1.0
+ */
 public class MessageResourceServiceImpl implements MessageResourceService {
 
 	@Autowired
@@ -16,6 +22,7 @@ public class MessageResourceServiceImpl implements MessageResourceService {
 		this.messageSource = messageSource;
 	}
 
+	@Override
 	public String get(String key, Object... args) {
 		try {
 			if (messageSource != null) {
@@ -27,6 +34,7 @@ public class MessageResourceServiceImpl implements MessageResourceService {
 		}
 	}
 
+	@Override
 	public String getMessage(String key, Object... args) {
 		return get(key, args);
 	}

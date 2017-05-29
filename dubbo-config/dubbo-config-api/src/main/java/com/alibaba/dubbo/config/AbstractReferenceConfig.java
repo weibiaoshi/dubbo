@@ -93,7 +93,7 @@ public abstract class AbstractReferenceConfig extends AbstractInterfaceConfig {
         this.generic = generic;
     }
 
-    public String getGeneric() {
+	public String getGeneric() {
         return generic;
     }
 
@@ -115,12 +115,14 @@ public abstract class AbstractReferenceConfig extends AbstractInterfaceConfig {
         this.injvm = injvm;
     }
 
-    @Parameter(key = Constants.REFERENCE_FILTER_KEY, append = true)
+    @Override
+	@Parameter(key = Constants.REFERENCE_FILTER_KEY, append = true)
     public String getFilter() {
         return super.getFilter();
     }
 
-    @Parameter(key = Constants.INVOKER_LISTENER_KEY, append = true)
+    @Override
+	@Parameter(key = Constants.INVOKER_LISTENER_KEY, append = true)
     public String getListener() {
         return super.getListener();
     }

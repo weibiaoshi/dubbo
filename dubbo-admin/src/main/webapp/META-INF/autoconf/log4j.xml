@@ -9,8 +9,7 @@
 		</layout>
 	</appender>
 	<appender name="FILE" class="org.apache.log4j.RollingFileAppender">
-		<param name="file"
-			value="${dubbo_governance_webx_loggingRoot}/dubbo-governance.log" />
+		<param name="file" value="${dubbo_governance_webx_loggingRoot}/dubbo-governance.log" />
 		<param name="append" value="true" />
 		<param name="maxFileSize" value="10MB" />
 		<param name="maxBackupIndex" value="100" />
@@ -20,8 +19,7 @@
 	</appender>
 
 
-	<appender name="EXCEPTION_LOG"
-		class="com.alibaba.dragoon.patrol.log4j.PatrolLog4jAppender">
+	<appender name="EXCEPTION_LOG" class="com.alibaba.dragoon.patrol.log4j.PatrolLog4jAppender">
 		<param name="Threshold" value="ERROR" />
 	</appender>
 

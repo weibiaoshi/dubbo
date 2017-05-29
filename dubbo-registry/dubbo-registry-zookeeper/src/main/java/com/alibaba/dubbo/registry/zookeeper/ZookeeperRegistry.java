@@ -30,8 +30,8 @@ import com.alibaba.dubbo.common.utils.UrlUtils;
 import com.alibaba.dubbo.registry.NotifyListener;
 import com.alibaba.dubbo.registry.support.FailbackRegistry;
 import com.alibaba.dubbo.remoting.zookeeper.ChildListener;
-import com.alibaba.dubbo.remoting.zookeeper.ZookeeperClient;
 import com.alibaba.dubbo.remoting.zookeeper.StateListener;
+import com.alibaba.dubbo.remoting.zookeeper.ZookeeperClient;
 import com.alibaba.dubbo.remoting.zookeeper.ZookeeperTransporter;
 import com.alibaba.dubbo.rpc.RpcException;
 
@@ -68,6 +68,7 @@ public class ZookeeperRegistry extends FailbackRegistry {
 		this.root = group;
 		zkClient = zookeeperTransporter.connect(url);
 		zkClient.addStateListener(new StateListener() {
+			@Override
 			public void stateChanged(int state) {
 				if (state == RECONNECTED) {
 					try {
@@ -80,10 +81,12 @@ public class ZookeeperRegistry extends FailbackRegistry {
 		});
 	}
 
+	@Override
 	public boolean isAvailable() {
 		return zkClient.isConnected();
 	}
 
+	@Override
 	public void destroy() {
 		super.destroy();
 		try {
@@ -93,46 +96,35 @@ public class ZookeeperRegistry extends FailbackRegistry {
 		}
 	}
 
+	@Override
 	protected void doRegister(URL url) {
 		try {
-			zkClient.create(toUrlPath(url), url.getParameter(Constants.DYNAMIC_KEY, true));
+			String toCategoryPath = toUrlPath(url);
+			boolean dynamic = url.getParameter(Constants.DYNAMIC_KEY, true);
+			zkClient.create(toCategoryPath, dynamic);
 		} catch (Throwable e) {
 			throw new RpcException("Failed to register " + url + " to zookeeper " + getUrl() + ", cause: " + e.getMessage(), e);
 		}
 	}
 
+	@Override
 	protected void doUnregister(URL url) {
 		try {
-			zkClient.delete(toUrlPath(url));
+			String toCategoryPath = toUrlPath(url);
+			zkClient.delete(toCategoryPath);
 		} catch (Throwable e) {
 			throw new RpcException("Failed to unregister " + url + " to zookeeper " + getUrl() + ", cause: " + e.getMessage(), e);
 		}
 	}
 
+	@Override
 	protected void doSubscribe(final URL url, final NotifyListener listener) {
 		try {
+			/** 获取所有的服务信息 */
 			if (Constants.ANY_VALUE.equals(url.getServiceInterface())) {
 				String root = toRootPath();
-				ConcurrentMap<NotifyListener, ChildListener> listeners = zkListeners.get(url);
-				if (listeners == null) {
-					zkListeners.putIfAbsent(url, new ConcurrentHashMap<NotifyListener, ChildListener>());
-					listeners = zkListeners.get(url);
-				}
-				ChildListener zkListener = listeners.get(listener);
-				if (zkListener == null) {
-					listeners.putIfAbsent(listener, new ChildListener() {
-						public void childChanged(String parentPath, List<String> currentChilds) {
-							for (String child : currentChilds) {
-								child = URL.decode(child);
-								if (!anyServices.contains(child)) {
-									anyServices.add(child);
-									subscribe(url.setPath(child).addParameters(Constants.INTERFACE_KEY, child, Constants.CHECK_KEY, String.valueOf(false)), listener);
-								}
-							}
-						}
-					});
-					zkListener = listeners.get(listener);
-				}
+				/** 获取监听器 */
+				ChildListener zkListener = getChildListener(url, listener);
 				zkClient.create(root, false);
 				List<String> services = zkClient.addChildListener(root, zkListener);
 				if (services != null && services.size() > 0) {
@@ -143,22 +135,10 @@ public class ZookeeperRegistry extends FailbackRegistry {
 					}
 				}
 			} else {
+				/** 订阅具体某个节点 */
 				List<URL> urls = new ArrayList<URL>();
 				for (String path : toCategoriesPath(url)) {
-					ConcurrentMap<NotifyListener, ChildListener> listeners = zkListeners.get(url);
-					if (listeners == null) {
-						zkListeners.putIfAbsent(url, new ConcurrentHashMap<NotifyListener, ChildListener>());
-						listeners = zkListeners.get(url);
-					}
-					ChildListener zkListener = listeners.get(listener);
-					if (zkListener == null) {
-						listeners.putIfAbsent(listener, new ChildListener() {
-							public void childChanged(String parentPath, List<String> currentChilds) {
-								ZookeeperRegistry.this.notify(url, listener, toUrlsWithEmpty(url, parentPath, currentChilds));
-							}
-						});
-						zkListener = listeners.get(listener);
-					}
+					ChildListener zkListener = getChildListener(url, listener);
 					zkClient.create(path, false);
 					List<String> children = zkClient.addChildListener(path, zkListener);
 					if (children != null) {
@@ -172,6 +152,34 @@ public class ZookeeperRegistry extends FailbackRegistry {
 		}
 	}
 
+	/**
+	 * 获取监听器
+	 * 
+	 * @param url
+	 * @param listener
+	 * @return
+	 */
+	private ChildListener getChildListener(final URL url, final NotifyListener listener) {
+
+		ConcurrentMap<NotifyListener, ChildListener> listeners = zkListeners.get(url);
+		if (listeners == null) {
+			zkListeners.putIfAbsent(url, new ConcurrentHashMap<NotifyListener, ChildListener>());
+			listeners = zkListeners.get(url);
+		}
+		ChildListener zkListener = listeners.get(listener);
+		if (zkListener == null) {
+			listeners.putIfAbsent(listener, new ChildListener() {
+				@Override
+				public void childChanged(String parentPath, List<String> currentChilds) {
+					ZookeeperRegistry.this.notify(url, listener, toUrlsWithEmpty(url, parentPath, currentChilds));
+				}
+			});
+			zkListener = listeners.get(listener);
+		}
+		return zkListener;
+	}
+
+	@Override
 	protected void doUnsubscribe(URL url, NotifyListener listener) {
 		ConcurrentMap<NotifyListener, ChildListener> listeners = zkListeners.get(url);
 		if (listeners != null) {
@@ -182,6 +190,7 @@ public class ZookeeperRegistry extends FailbackRegistry {
 		}
 	}
 
+	@Override
 	public List<URL> lookup(URL url) {
 		if (url == null) {
 			throw new IllegalArgumentException("lookup url == null");
@@ -200,23 +209,20 @@ public class ZookeeperRegistry extends FailbackRegistry {
 		}
 	}
 
-	private String toRootDir() {
-		if (root.equals(Constants.PATH_SEPARATOR)) {
-			return root;
-		}
-		return root + Constants.PATH_SEPARATOR;
-	}
-
 	private String toRootPath() {
 		return root;
 	}
 
 	private String toServicePath(URL url) {
-		String name = url.getServiceInterface();
-		if (Constants.ANY_VALUE.equals(name)) {
-			return toRootPath();
-		}
-		return toRootDir() + URL.encode(name);
+		StringBuilder builder = new StringBuilder(64);
+		builder.append(toRootPath());
+		builder.append(Constants.PATH_SEPARATOR);
+		builder.append(url.getServiceGroup());
+		builder.append(Constants.PATH_SEPARATOR);
+		builder.append(url.getServiceVersion());
+		builder.append(Constants.PATH_SEPARATOR);
+		builder.append(url.getServiceInterface());
+		return builder.toString();
 	}
 
 	private String[] toCategoriesPath(URL url) {
@@ -224,6 +230,7 @@ public class ZookeeperRegistry extends FailbackRegistry {
 		if (Constants.ANY_VALUE.equals(url.getParameter(Constants.CATEGORY_KEY))) {
 			categroies = new String[] { Constants.PROVIDERS_CATEGORY, Constants.CONSUMERS_CATEGORY, Constants.ROUTERS_CATEGORY, Constants.CONFIGURATORS_CATEGORY };
 		} else {
+			/**  */
 			categroies = url.getParameter(Constants.CATEGORY_KEY, new String[] { Constants.DEFAULT_CATEGORY });
 		}
 		String[] paths = new String[categroies.length];

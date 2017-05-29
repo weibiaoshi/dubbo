@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans:beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:services="http://www.alibaba.com/schema/services"
-	xmlns:fm-conditions="http://www.alibaba.com/schema/services/form/conditions"
-	xmlns:fm-validators="http://www.alibaba.com/schema/services/form/validators"
-	xmlns="http://www.alibaba.com/schema/services/form/validators"
+	xmlns:services="http://www.alibaba.com/schema/services" xmlns:fm-conditions="http://www.alibaba.com/schema/services/form/conditions"
+	xmlns:fm-validators="http://www.alibaba.com/schema/services/form/validators" xmlns="http://www.alibaba.com/schema/services/form/validators"
 	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:p="http://www.springframework.org/schema/p"
 	xsi:schemaLocation="
         http://www.alibaba.com/schema/services http://localhost:8080/schema/services.xsd
@@ -19,6 +17,6 @@
 			<services:field name="serviceParameters"></services:field>
 			<services:field name="serviceUrl"></services:field>
 		</services:group>
-		
+
 	</services:form>
 </beans:beans>

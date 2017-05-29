@@ -1057,6 +1057,7 @@ public final class URL implements Serializable {
 		return map;
 	}
 
+	@Override
 	public String toString() {
 		if (string != null) {
 			return string;
@@ -1212,9 +1213,12 @@ public final class URL implements Serializable {
 		return buildString(true, false, true, true);
 	}
 
-	@Deprecated
-	public String getServiceName() {
-		return getServiceInterface();
+	public String getServiceGroup() {
+		return getParameter(Constants.GROUP_KEY, Constants.DEFAULT_GROUP);
+	}
+
+	public String getServiceVersion() {
+		return getParameter(Constants.VERSION_KEY, Constants.DEFAULT_VERSION);
 	}
 
 	public String getServiceInterface() {
@@ -1223,101 +1227,6 @@ public final class URL implements Serializable {
 
 	public URL setServiceInterface(String service) {
 		return addParameter(Constants.INTERFACE_KEY, service);
-	}
-
-	/**
-	 * @deprecated Replace to <code>getParameter(String, int)</code>
-	 * @see #getParameter(String, int)
-	 */
-	@Deprecated
-	public int getIntParameter(String key) {
-		return getParameter(key, 0);
-	}
-
-	/**
-	 * @deprecated Replace to <code>getParameter(String, int)</code>
-	 * @see #getParameter(String, int)
-	 */
-	@Deprecated
-	public int getIntParameter(String key, int defaultValue) {
-		return getParameter(key, defaultValue);
-	}
-
-	/**
-	 * @deprecated Replace to <code>getPositiveParameter(String, int)</code>
-	 * @see #getPositiveParameter(String, int)
-	 */
-	@Deprecated
-	public int getPositiveIntParameter(String key, int defaultValue) {
-		return getPositiveParameter(key, defaultValue);
-	}
-
-	/**
-	 * @deprecated Replace to <code>getParameter(String, boolean)</code>
-	 * @see #getParameter(String, boolean)
-	 */
-	@Deprecated
-	public boolean getBooleanParameter(String key) {
-		return getParameter(key, false);
-	}
-
-	/**
-	 * @deprecated Replace to <code>getParameter(String, boolean)</code>
-	 * @see #getParameter(String, boolean)
-	 */
-	@Deprecated
-	public boolean getBooleanParameter(String key, boolean defaultValue) {
-		return getParameter(key, defaultValue);
-	}
-
-	/**
-	 * @deprecated Replace to
-	 *             <code>getMethodParameter(String, String, int)</code>
-	 * @see #getMethodParameter(String, String, int)
-	 */
-	@Deprecated
-	public int getMethodIntParameter(String method, String key) {
-		return getMethodParameter(method, key, 0);
-	}
-
-	/**
-	 * @deprecated Replace to
-	 *             <code>getMethodParameter(String, String, int)</code>
-	 * @see #getMethodParameter(String, String, int)
-	 */
-	@Deprecated
-	public int getMethodIntParameter(String method, String key, int defaultValue) {
-		return getMethodParameter(method, key, defaultValue);
-	}
-
-	/**
-	 * @deprecated Replace to
-	 *             <code>getMethodPositiveParameter(String, String, int)</code>
-	 * @see #getMethodPositiveParameter(String, String, int)
-	 */
-	@Deprecated
-	public int getMethodPositiveIntParameter(String method, String key, int defaultValue) {
-		return getMethodPositiveParameter(method, key, defaultValue);
-	}
-
-	/**
-	 * @deprecated Replace to
-	 *             <code>getMethodParameter(String, String, boolean)</code>
-	 * @see #getMethodParameter(String, String, boolean)
-	 */
-	@Deprecated
-	public boolean getMethodBooleanParameter(String method, String key) {
-		return getMethodParameter(method, key, false);
-	}
-
-	/**
-	 * @deprecated Replace to
-	 *             <code>getMethodParameter(String, String, boolean)</code>
-	 * @see #getMethodParameter(String, String, boolean)
-	 */
-	@Deprecated
-	public boolean getMethodBooleanParameter(String method, String key, boolean defaultValue) {
-		return getMethodParameter(method, key, defaultValue);
 	}
 
 	public static String encode(String value) {
